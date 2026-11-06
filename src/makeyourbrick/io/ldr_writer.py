@@ -16,7 +16,7 @@ def format_ldraw_number(value: float) -> str:
 
 
 def brick_to_ldraw_position(brick: Brick, height_unit_ldu: int = BRICK_HEIGHT_LDU) -> tuple[float, float, float]:
-    x = (brick.x + (brick.width - 1) / 2) * STUD_LDU
+    x = -(brick.x + (brick.width - 1) / 2) * STUD_LDU
     y = -brick.y * height_unit_ldu
     z = (brick.z + (brick.depth - 1) / 2) * STUD_LDU
     return x, y, z

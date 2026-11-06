@@ -231,8 +231,24 @@ def repair_sculpture_colors(
     color_ids: np.ndarray,
     default_color_id: int = 16,
 ) -> np.ndarray:
+    from scipy.spatial import cKDTree
+
     repaired = color_ids.copy()
     repaired[~repaired_occupancy] = 0
+
     new_voxels = repaired_occupancy & ~original_occupancy
-    repaired[new_voxels] = int(default_color_id)
+    if not new_voxels.any():
+        return repaired.astype(np.int32)
+
+    # Color 0 is valid black; only exclude the inherited/default color.
+    source_mask = original_occupancy & (color_ids != default_color_id)
+    source_points = np.argwhere(source_mask)
+    if len(source_points) == 0:
+        raise ValueError("Cannot repair voxel colors: no valid source colors.")
+
+    new_points = np.argwhere(new_voxels)
+    nearest = cKDTree(source_points).query(new_points)[1]
+    nearest_points = source_points[nearest]
+    repaired[new_voxels] = color_ids[tuple(nearest_points.T)]
+
     return repaired.astype(np.int32)

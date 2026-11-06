@@ -125,7 +125,7 @@ def quantize_rgb_to_ldraw(
 ) -> np.ndarray:
     rgb = np.asarray(rgb, dtype=np.uint8)
     result = np.full(rgb.shape[:-1], int(default_color_id), dtype=np.int32)
-    mask = np.any(rgb > 0, axis=-1)
+    mask = np.ones(rgb.shape[:-1], dtype=bool)#np.any(rgb > 0, axis=-1)
     if not mask.any():
         return result
     codes, palette_lab = _palette_arrays(palette)
